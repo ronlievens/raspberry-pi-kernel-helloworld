@@ -1,3 +1,6 @@
+# ======================================================================================================================
+# TOOLCHAINS
+# ======================================================================================================================
 CC32=clang
 CC64=$(CC32)
 OBJCOPY32=llvm-objcopy
@@ -5,6 +8,9 @@ OBJCOPY64=$(OBJCOPY32)
 CFLAGS=-fpic
 CPPFLAGS=-O2 -Wall -Wextra -nostdlib
 
+# ======================================================================================================================
+# FLAGS
+# ======================================================================================================================
 PLATFORM_32_BIT=-target arm-freestanding-eabi
 PLATFORM_64_BIT=-target aarch64-none-elf
 
@@ -14,33 +20,47 @@ CPU_P3=-mcpu=cortex-a53
 CPU_P4=-mcpu=cortex-a72
 CPU_P5=-mcpu=cortex-a76
 
+# ======================================================================================================================
+# PLATFORM-SPECIFIC COMMANDS
+# ======================================================================================================================
+ifeq ($(OS),Windows_NT)
+	RM    = rmdir /S /Q
+	MKDIR = mkdir
+else
+	RM    = rm -rf
+	MKDIR = mkdir -p
+endif
+
+# ======================================================================================================================
+# DEFAULT TARGET
+# ======================================================================================================================
 all: clean build-pi-0 build-pi-1 build-pi-2 build-pi-3 build-pi-4 build-pi-5
 
 # ======================================================================================================================
 # BUILD THE C IMAGES
 # ======================================================================================================================
 build-pi-0: compile-pi-0
-	$(CC32) $(CPU_P1) $(PLATFORM_32_BIT) $(CFLAGS) -T ../boot/linker-aarch32.ld -o build/kernel-pi-0.elf build/aarch32-multi-core.o build/kernel-pi-0.o  $(CPPFLAGS)
+	$(CC32) $(CPU_P1) $(PLATFORM_32_BIT) -fuse-ld=lld $(CFLAGS) -T ../boot/linker-aarch32.ld -o build/kernel-pi-0.elf build/aarch32-multi-core.o build/kernel-pi-0.o  $(CPPFLAGS)
 	$(OBJCOPY32) build/kernel-pi-0.elf -O binary build/kernel-pi-0.img
 
 build-pi-1: compile-pi-1
-	$(CC32) $(CPU_P1) $(PLATFORM_32_BIT) $(CFLAGS) -T ../boot/linker-aarch32.ld -o build/kernel-pi-1.elf build/aarch32-multi-core.o build/kernel-pi-1.o  $(CPPFLAGS)
+	$(CC32) $(CPU_P1) $(PLATFORM_32_BIT) -fuse-ld=lld $(CFLAGS) -T ../boot/linker-aarch32.ld -o build/kernel-pi-1.elf build/aarch32-multi-core.o build/kernel-pi-1.o  $(CPPFLAGS)
 	$(OBJCOPY32) build/kernel-pi-1.elf -O binary build/kernel-pi-1.img
 
 build-pi-2: compile-pi-2
-	$(CC32) $(CPU_P2) $(PLATFORM_32_BIT) $(CFLAGS) -T ../boot/linker-aarch32.ld -o build/kernel-pi-2.elf  build/aarch32-single-core.o build/kernel-pi-2.o $(CPPFLAGS)
+	$(CC32) $(CPU_P2) $(PLATFORM_32_BIT) -fuse-ld=lld $(CFLAGS) -T ../boot/linker-aarch32.ld -o build/kernel-pi-2.elf  build/aarch32-single-core.o build/kernel-pi-2.o $(CPPFLAGS)
 	$(OBJCOPY32) build/kernel-pi-2.elf -O binary build/kernel-pi-2.img
 
 build-pi-3: compile-pi-3
-	$(CC64) $(CPU_P3) $(PLATFORM_64_BIT) $(CFLAGS) -T ../boot/linker-aarch64.ld -o build/kernel-pi-3.elf -nostdlib build/aarch64-single-core.o build/kernel-pi-3.o $(CPPFLAGS)
+	$(CC64) $(CPU_P3) $(PLATFORM_64_BIT) -fuse-ld=lld $(CFLAGS) -T ../boot/linker-aarch64.ld -o build/kernel-pi-3.elf -nostdlib build/aarch64-single-core.o build/kernel-pi-3.o $(CPPFLAGS)
 	$(OBJCOPY64) build/kernel-pi-3.elf -O binary build/kernel-pi-3.img
 
 build-pi-4: compile-pi-4
-	$(CC64) $(CPU_P4) $(PLATFORM_64_BIT) $(CFLAGS) -T ../boot/linker-aarch64.ld -o build/kernel-pi-4.elf -nostdlib build/aarch64-single-core.o build/kernel-pi-4.o $(CPPFLAGS)
+	$(CC64) $(CPU_P4) $(PLATFORM_64_BIT) -fuse-ld=lld $(CFLAGS) -T ../boot/linker-aarch64.ld -o build/kernel-pi-4.elf -nostdlib build/aarch64-single-core.o build/kernel-pi-4.o $(CPPFLAGS)
 	$(OBJCOPY64) build/kernel-pi-4.elf -O binary build/kernel-pi-4.img
 
 build-pi-5: compile-pi-5
-	$(CC64) $(CPU_P5) $(PLATFORM_64_BIT) $(CFLAGS) -T ../boot/linker-aarch64.ld -o build/kernel-pi-5.elf -nostdlib build/aarch64-single-core.o build/kernel-pi-5.o $(CPPFLAGS)
+	$(CC64) $(CPU_P5) $(PLATFORM_64_BIT) -fuse-ld=lld $(CFLAGS) -T ../boot/linker-aarch64.ld -o build/kernel-pi-5.elf -nostdlib build/aarch64-single-core.o build/kernel-pi-5.o $(CPPFLAGS)
 	$(OBJCOPY64) build/kernel-pi-4.elf -O binary build/kernel-pi-5.img
 
 # ======================================================================================================================
@@ -73,14 +93,14 @@ boot-64:
 
 boot-32:
 	$(CC32) $(CPU_P1) $(PLATFORM_32_BIT) $(CFLAGS) -c ../boot/aarch32-single-core.s -o build/aarch32-single-core.o
-	$(CC32)  $(CPU_P2) $(PLATFORM_32_BIT) $(CFLAGS) -c ../boot/aarch32-multi-core.s -o build/aarch32-multi-core.o
+	$(CC32) $(CPU_P2) $(PLATFORM_32_BIT) $(CFLAGS) -c ../boot/aarch32-multi-core.s -o build/aarch32-multi-core.o
 
 # ======================================================================================================================
 # CLEAN
 # ======================================================================================================================
 clean:
-	rm -rf build
-	mkdir build
+	-$(RM) build
+	$(MKDIR) build
 
 # ======================================================================================================================
 # RUN EMULATOR

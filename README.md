@@ -11,6 +11,12 @@ This project is primary based on the guides and documentation from:
 This project can be compiled with the C compilers of [arm-gcc](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads), [llvm](https://llvm.org) and [zig](https://ziglang.org).
 The emulation is done with [qemu](https://www.qemu.org).
 
+To install the toolchain on Windows we will use [choco](https://chocolatey.org/install):
+
+```shell
+gsudo choco install gcc-arm-embedded llvm zig qemu make
+```
+
 To install the toolchain on Windows we will use [scoop](https://scoop.sh):
 
 ```shell

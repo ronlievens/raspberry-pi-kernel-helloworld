@@ -5,7 +5,10 @@ Thumbs.db
 # IntelliJ
 *.iml
 .idea/
+.clwb/
 
 # Project
 *.o
 *.elf
+build/
+
