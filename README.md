@@ -26,7 +26,7 @@ scoop install gcc-arm-none-eabi llvm zig zls extras/vcredist2022 qemu make
 To install the toolchain on MacOs we will use [brew](https://brew.sh):
 
 ```shell
-brew install gcc-arm-embedded aarch64-elf-gcc aarch64-elf-binutils llvm zig zls qemu
+brew install gcc-arm-embedded aarch64-elf-gcc aarch64-elf-binutils llvm lld zig zls qemu
 ```
 
 ## Building and running hello world
